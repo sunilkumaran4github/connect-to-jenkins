@@ -26,22 +26,22 @@ pipeline {
     stages {
         stage('Requirements') {
             steps {
-                echo 'Installing requirements...'
+                echo 'Installing requirements...2'
             }
         }
         stage('Build') {
             steps {
-                echo 'Building..'
+                echo 'Building..2'
             }
         }
         stage('Test') {
             steps {
-                echo 'Testing..'
+                echo 'Testing..2'
             }
         }
         stage('Report') {
             steps {
-                echo 'Reporting....'
+                echo 'Reporting....2'
             }
         }
     }
