@@ -1,41 +1,61 @@
 pipeline {
     agent any
-    parameters {
-        choice(name: 'NUMBER',
-            choices: [60,10,20,30,40,50,70,80,90],
-            description: 'Select the value for F(n) for the Fibonnai sequence.')
-    }
+
+    // this section configures Jenkins options
     options {
+
+        // only keep 10 logs for no more than 10 days
         buildDiscarder(logRotator(daysToKeepStr: '10', numToKeepStr: '10'))
+
+        // cause the build to time out if it runs for more than 12 hours
         timeout(time: 12, unit: 'HOURS')
+
+        // add timestamps to the log
         timestamps()
     }
+
+    // this section configures triggers
     triggers {
-        cron '@midnight'
+          // create a cron trigger that will run the job every day at midnight
+          // note that the time is based on the time zone used by the server
+          // where Jenkins is running, not the user's time zone
+          cron '@midnight'
     }
+
+    // the pipeline section we all know and love: stages! :D
     stages {
-        stage('Make executable') {
+        stage('Requirements') {
             steps {
-                sh('chmod +x ./scripts/fibonacci.sh')
+                echo 'Installing requirements...'
             }
         }
-        stage('Relative path') {
+        stage('Build') {
             steps {
-                sh("./scripts/fibonacci.sh ${env.NUMBER}")
+                echo 'Building..'
             }
         }
-        stage('Full path') {
+        stage('Test') {
             steps {
-                sh("${env.WORKSPACE}/scripts/fibonacci.sh ${env.NUMBER}")
+                echo 'Testing..'
             }
         }
-        stage('Change directory') {
+        stage('Report') {
             steps {
-                dir("${env.WORKSPACE}/scripts"){
-                    sh("./fibonacci.sh ${env.NUMBER}")
-                }
+                echo 'Reporting....'
             }
+        }
+    }
+
+    // the post section is a special collection of stages
+    // that are run after all other stages have completed
+    post {
+
+        // the always stage will always be run
+        always {
+
+            // the always stage can contain build steps like other stages
+            // a "steps{...}" section is not needed.
+            echo "This step will run after all other steps have finished.  It will always run, even in the status of the build is not SUCCESS"
         }
     }
 }
-
